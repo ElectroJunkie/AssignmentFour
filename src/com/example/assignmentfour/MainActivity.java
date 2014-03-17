@@ -1,4 +1,4 @@
-package com.example.assignmentthree;
+package com.example.assignmentfour;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -30,6 +30,9 @@ import com.box.boxandroidlibv2.dao.BoxAndroidFolder;
 import com.box.boxandroidlibv2.dao.BoxAndroidOAuthData;
 import com.box.boxjavalibv2.exceptions.AuthFatalFailureException;
 import com.box.boxjavalibv2.requests.requestobjects.BoxFileUploadRequestObject;
+import com.example.assignmentfour.R;
+import com.example.assignmentfour.R.id;
+import com.example.assignmentfour.R.layout;
 
 public class MainActivity extends Activity {
 	
