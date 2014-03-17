@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/top_layout"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+    
+    <LinearLayout
+        android:id="@+id/layout_line_1"
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" >
+        
+    	<Button 
+        	android:id="@+id/button_start_service"
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:layout_weight="0.5"
+        	android:text="@string/START_SERVICE"></Button>
+    	<Button 
+        	android:id="@+id/button_stop_service"
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:layout_weight="0.5"
+        	android:text="@string/STOP_SERVICE"></Button>
+    </LinearLayout>
+    
+    <LinearLayout
+        android:id="@+id/layout_line_2"
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" >
+        
+    	<Button 
+        	android:id="@+id/button_write"
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:layout_weight="0.5"
+        	android:text="@string/WRITE"></Button>
+    	<Button 
+        	android:id="@+id/button_authenticate"
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:layout_weight="0.5"
+        	android:text="@string/AUTHENTICATE"></Button>
+    </LinearLayout>
+    
+    <LinearLayout
+        android:id="@+id/layout_line_3"
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" >
+        
+    	<Button 
+        	android:id="@+id/button_box_upload"
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:layout_weight="0.5"
+        	android:text="@string/BOX_UPLOAD"></Button>
+    	<Button 
+        	android:id="@+id/button_box_download"
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:layout_weight="0.5"
+        	android:text="@string/BOX_DOWNLOAD"></Button>
+    </LinearLayout>
+    
+    <TextView
+        android:id="@+id/textview_accel_data"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:hint="@string/TEXTVIEW_HINT" >
+    </TextView>
+    
+</LinearLayout>

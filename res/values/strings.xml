@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">AssignmentThree</string>
+    <string name="accel_service">Accelerometer Service</string>
+    
+    <string name="START_SERVICE">Start Service</string>
+    <string name="STOP_SERVICE">Stop Service</string>
+    <string name="WRITE">Write To File</string>
+    <string name="AUTHENTICATE">Authenticate</string>
+    <string name="BOX_UPLOAD">BOX Upload</string>
+    <string name="BOX_DOWNLOAD">BOX Download</string>
+    
+    <string name="action_settings">Settings</string>
+    <string name="TEXTVIEW_HINT">Accelerometer data will be displayed here.</string>
+
+</resources>
