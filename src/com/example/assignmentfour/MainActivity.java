@@ -2,12 +2,17 @@ package com.example.assignmentfour;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.ObjectUtils.Null;
 
 import android.app.Activity;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothServerSocket;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -17,7 +22,9 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,20 +37,22 @@ import com.box.boxandroidlibv2.dao.BoxAndroidFolder;
 import com.box.boxandroidlibv2.dao.BoxAndroidOAuthData;
 import com.box.boxjavalibv2.exceptions.AuthFatalFailureException;
 import com.box.boxjavalibv2.requests.requestobjects.BoxFileUploadRequestObject;
-import com.example.assignmentfour.R;
-import com.example.assignmentfour.R.id;
-import com.example.assignmentfour.R.layout;
 
 public class MainActivity extends Activity {
 	
 	private final static int AUTH_REQUEST = 1;
 	private final static int UPLOAD_REQUEST = 2;
 	private final static int DOWNLOAD_REQUEST = 3;
+	private static final int REQUEST_ENABLE_BT = 4;
 	
 	Button buttonStartService, buttonStopService;
 	Button buttonWrite, buttonAuthenticate;
 	Button buttonBoxUpload, buttonBoxDownload;
-	TextView accelDataTextView;
+	Button buttonBluetoothOn, buttonBluetoothOff;
+	Button buttonBluetoothDiscoverable, buttonBluetoothPair;
+	Button buttonListPairedDevices, buttonSearchDevicesOrCancel;
+	
+	TextView accelDataTextView, textViewBluetooth;
 	ServiceDataReceiver dataReceiver;
 	float[] accelData;
 	boolean serviceFlag = false;
@@ -53,6 +62,12 @@ public class MainActivity extends Activity {
 	FileOutputStream fStream;
 	OutputStreamWriter oWriter;
 	String dataString;
+	
+	// Bluetooth
+	BluetoothAdapter mBluetoothAdapter;
+	ArrayAdapter<String> BtArrayAdapter;
+	Set<BluetoothDevice> pairedDevices;
+	ListView listViewBluetoothDevices;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -64,17 +79,48 @@ public class MainActivity extends Activity {
 		buttonStartService = (Button)findViewById(R.id.button_start_service);
 		buttonStopService = (Button)findViewById(R.id.button_stop_service);
 		buttonWrite = (Button)findViewById(R.id.button_write);
+		buttonBluetoothOn = (Button) findViewById(R.id.button_bluetooth_on);
+		buttonBluetoothOff = (Button) findViewById(R.id.button_bluetooth_off);
+		buttonBluetoothDiscoverable = (Button) findViewById(R.id.button_bluetooth_enable_discovery);
+		buttonBluetoothPair = (Button) findViewById(R.id.button_bluetooth_pair);
+		buttonListPairedDevices = (Button) findViewById(R.id.button_list_paried_devices);
+		buttonSearchDevicesOrCancel = (Button) findViewById(R.id.button_search_devices_or_cancel);
 		
 		// Set up on click listeners
 		buttonStartService.setOnClickListener(buttonStartServiceListener);
 		buttonStopService.setOnClickListener(buttonStopServiceListener);
 		buttonWrite.setOnClickListener(buttonWriteListener);
+		buttonBluetoothOn.setOnClickListener(buttonBluetoothOnListener);
+		buttonBluetoothOff.setOnClickListener(buttonBluetoothOffListener);
+		buttonBluetoothDiscoverable.setOnClickListener(buttonBluetoothDiscoverableListener);
+		buttonBluetoothPair.setOnClickListener(buttonBluetoothPairListener);
+		buttonListPairedDevices.setOnClickListener(buttonListPairedDevicesListener);
+		buttonSearchDevicesOrCancel.setOnClickListener(buttonSearchDevicesOrCancelListener);
 		
 		initializeBoxUI();
 		//Toast.makeText(getApplicationContext(), dir.getAbsolutePath(), Toast.LENGTH_SHORT).show();
+		
+		// Bluetooth
+		mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+		
+		// Check if Bluetooth is supported on the device.
+		if(mBluetoothAdapter == null){
+			// Maybe make a toast!
+		}
+		
+		listViewBluetoothDevices = (ListView)findViewById(R.id.listview_bluetooth_devices);
+		
+		BtArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
+		listViewBluetoothDevices.setAdapter(BtArrayAdapter);
+		
+		// Register the BroadcastReceiver
+		IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
+		registerReceiver(bluetoothReceiver, filter); //
 	}
 	
-	// Box UI initialize
+	/////////
+	// Box //
+	/////////
 	private void initializeBoxUI(){
 		initializeAuthenticateButton();
 		initializeUploadButton();
@@ -107,10 +153,6 @@ public class MainActivity extends Activity {
 			}
 		});
 	}
-	
-	/////////
-	// Box //
-	/////////
 	private void startAuthentication(){
 		Intent intentBox = OAuthActivity.createOAuthActivityIntent(this, BoxApplication.CLIENT_ID,
 				BoxApplication.CLIENT_SECRET, false, BoxApplication.REDIRECT_URL);
@@ -151,6 +193,9 @@ public class MainActivity extends Activity {
         else if (requestCode == DOWNLOAD_REQUEST) {
             onFileSelected(resultCode, data);
         }
+        else if (requestCode == REQUEST_ENABLE_BT){
+        	//Do something here?
+    	}
     }
 	
     private void onAuthenticated(int resultCode, Intent data) {
@@ -207,7 +252,6 @@ public class MainActivity extends Activity {
 
         }
     }
-
     private void onFolderSelected(int resultCode, Intent data) {
         if (Activity.RESULT_OK != resultCode) {
             Toast.makeText(this, "fail", Toast.LENGTH_LONG).show();
@@ -313,6 +357,53 @@ public class MainActivity extends Activity {
 			
 		}
 	};
+	private OnClickListener buttonBluetoothOnListener = new OnClickListener(){
+		public void onClick(View view){
+			if(!mBluetoothAdapter.isEnabled()){
+				Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+				startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+			}else{
+				//
+			}
+		}
+	};
+	private OnClickListener buttonBluetoothOffListener = new OnClickListener(){
+		public void onClick(View view){
+			mBluetoothAdapter.disable();
+			// For this part to work, you need the BLUETOOTH_ADMIN permission on manifest.
+		}
+	};
+	private OnClickListener buttonBluetoothDiscoverableListener = new OnClickListener(){
+		public void onClick(View view){
+			Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
+			discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
+			startActivity(discoverableIntent);
+		}
+	};
+	private OnClickListener buttonBluetoothPairListener = new OnClickListener(){
+		public void onClick(View view){
+			
+		}
+	};
+	private OnClickListener buttonListPairedDevicesListener = new OnClickListener(){
+		public void onClick(View view){
+			pairedDevices = mBluetoothAdapter.getBondedDevices(); // Get paired devices
+			for(BluetoothDevice device : pairedDevices)
+				BtArrayAdapter.add(device.getName() + "\n" + device.getAddress());
+		}
+	};
+	private OnClickListener buttonSearchDevicesOrCancelListener = new OnClickListener(){
+		public void onClick(View view){
+			if(mBluetoothAdapter.isDiscovering()){
+				mBluetoothAdapter.cancelDiscovery();
+				Toast.makeText(getApplicationContext(), "Cancel Searching", Toast.LENGTH_SHORT).show();
+			}else{
+				BtArrayAdapter.clear();
+				mBluetoothAdapter.startDiscovery();
+				Toast.makeText(getApplicationContext(), "Searching", Toast.LENGTH_SHORT).show();
+			}
+		}
+	};
 	
 	/////////////////////////////////////////////////////////////////
 	// Implement message deliver mechanism - Use BroadcastReceiver //
@@ -331,5 +422,46 @@ public class MainActivity extends Activity {
 			String textToShow = accelDataToString.toString();
 			accelDataTextView.setText(textToShow);
 		}
+	}
+	
+	final BroadcastReceiver bluetoothReceiver = new BroadcastReceiver(){
+		public void onReceive(Context context, Intent intent){
+			String action = intent.getAction();
+			if(BluetoothDevice.ACTION_FOUND.equals(action)){
+				BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+				BtArrayAdapter.add(device.getName() + "\n" + device.getAddress());
+				BtArrayAdapter.notifyDataSetChanged();
+			}
+		}
+	};
+	
+	/////////////////////////////
+	// Bluetooth Server Thread //
+	/////////////////////////////
+	public class BluetoothServer extends Thread {
+		
+		private final BluetoothServerSocket mServerSocket;
+		
+		public BluetoothServer() {
+			
+			BluetoothServerSocket tempSocket = null;
+			
+			try{
+				tempSocket = mBluetoothAdapter.listenUsingRfcommWithServiceRecord(NAME, MY_UUID);
+			}
+			catch (IOException e){}
+			
+			mServerSocket = tempSocket;
+		}
+		
+		public void run() {
+			
+		}
+	}
+	
+	@Override
+	protected void onDestroy(){
+		super.onDestroy();
+		unregisterReceiver(bluetoothReceiver);
 	}
 }
