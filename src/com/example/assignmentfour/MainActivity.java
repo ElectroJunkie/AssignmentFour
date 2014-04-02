@@ -2,7 +2,6 @@ package com.example.assignmentfour;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.Set;
 
@@ -12,7 +11,6 @@ import org.apache.commons.lang.ObjectUtils.Null;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothServerSocket;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -20,6 +18,8 @@ import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
@@ -49,8 +49,7 @@ public class MainActivity extends Activity {
 	Button buttonWrite, buttonAuthenticate;
 	Button buttonBoxUpload, buttonBoxDownload;
 	Button buttonBluetoothOn, buttonBluetoothOff;
-	Button buttonBluetoothDiscoverable, buttonBluetoothPair;
-	Button buttonListPairedDevices, buttonSearchDevicesOrCancel;
+	Button buttonBluetoothConnect, buttonBluetoothSendData;
 	
 	TextView accelDataTextView, textViewBluetooth;
 	ServiceDataReceiver dataReceiver;
@@ -63,16 +62,25 @@ public class MainActivity extends Activity {
 	OutputStreamWriter oWriter;
 	String dataString;
 	
-	// Bluetooth
+	// Bluetooth //
 	BluetoothAdapter mBluetoothAdapter;
 	ArrayAdapter<String> BtArrayAdapter;
 	Set<BluetoothDevice> pairedDevices;
 	ListView listViewBluetoothDevices;
+	private BluetoothService mBluetoothService = null;
+	
+	// Handler //
+	private final Handler mHandler = new Handler(){
+		@Override
+		public void handleMessage(Message message){
+			
+		}
+	};
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.main_layout);
+		setContentView(R.layout.layout_main);
 		// A note for future: If I put the setContentView in the end of onCreate, it doesn't work!
 		
 		// Initialize Buttons and TextViews
@@ -81,10 +89,8 @@ public class MainActivity extends Activity {
 		buttonWrite = (Button)findViewById(R.id.button_write);
 		buttonBluetoothOn = (Button) findViewById(R.id.button_bluetooth_on);
 		buttonBluetoothOff = (Button) findViewById(R.id.button_bluetooth_off);
-		buttonBluetoothDiscoverable = (Button) findViewById(R.id.button_bluetooth_enable_discovery);
-		buttonBluetoothPair = (Button) findViewById(R.id.button_bluetooth_pair);
-		buttonListPairedDevices = (Button) findViewById(R.id.button_list_paried_devices);
-		buttonSearchDevicesOrCancel = (Button) findViewById(R.id.button_search_devices_or_cancel);
+		buttonBluetoothConnect = (Button) findViewById(R.id.button_bluetooth_connect);
+		buttonBluetoothSendData = (Button) findViewById(R.id.button_bluetooth_send_data);
 		
 		// Set up on click listeners
 		buttonStartService.setOnClickListener(buttonStartServiceListener);
@@ -92,30 +98,20 @@ public class MainActivity extends Activity {
 		buttonWrite.setOnClickListener(buttonWriteListener);
 		buttonBluetoothOn.setOnClickListener(buttonBluetoothOnListener);
 		buttonBluetoothOff.setOnClickListener(buttonBluetoothOffListener);
-		buttonBluetoothDiscoverable.setOnClickListener(buttonBluetoothDiscoverableListener);
-		buttonBluetoothPair.setOnClickListener(buttonBluetoothPairListener);
-		buttonListPairedDevices.setOnClickListener(buttonListPairedDevicesListener);
-		buttonSearchDevicesOrCancel.setOnClickListener(buttonSearchDevicesOrCancelListener);
+		buttonBluetoothConnect.setOnClickListener(buttonBluetoothConnectListener);
+		buttonBluetoothSendData.setOnClickListener(buttonBluetoothSendDataListener);
 		
 		initializeBoxUI();
 		//Toast.makeText(getApplicationContext(), dir.getAbsolutePath(), Toast.LENGTH_SHORT).show();
 		
 		// Bluetooth
+		mBluetoothService = new BluetoothService(mHandler);
 		mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 		
 		// Check if Bluetooth is supported on the device.
 		if(mBluetoothAdapter == null){
 			// Maybe make a toast!
 		}
-		
-		listViewBluetoothDevices = (ListView)findViewById(R.id.listview_bluetooth_devices);
-		
-		BtArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
-		listViewBluetoothDevices.setAdapter(BtArrayAdapter);
-		
-		// Register the BroadcastReceiver
-		IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
-		registerReceiver(bluetoothReceiver, filter); //
 	}
 	
 	/////////
@@ -180,7 +176,6 @@ public class MainActivity extends Activity {
 			e.printStackTrace();
 		}
 	}
-	// From below, I just copied.
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -197,7 +192,6 @@ public class MainActivity extends Activity {
         	//Do something here?
     	}
     }
-	
     private void onAuthenticated(int resultCode, Intent data) {
         if (Activity.RESULT_OK != resultCode) {
             Toast.makeText(this, "fail", Toast.LENGTH_LONG).show();
@@ -373,42 +367,22 @@ public class MainActivity extends Activity {
 			// For this part to work, you need the BLUETOOTH_ADMIN permission on manifest.
 		}
 	};
-	private OnClickListener buttonBluetoothDiscoverableListener = new OnClickListener(){
+	private OnClickListener buttonBluetoothConnectListener = new OnClickListener(){
 		public void onClick(View view){
 			Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
 			discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
 			startActivity(discoverableIntent);
 		}
 	};
-	private OnClickListener buttonBluetoothPairListener = new OnClickListener(){
+	private OnClickListener buttonBluetoothSendDataListener = new OnClickListener(){
 		public void onClick(View view){
 			
-		}
-	};
-	private OnClickListener buttonListPairedDevicesListener = new OnClickListener(){
-		public void onClick(View view){
-			pairedDevices = mBluetoothAdapter.getBondedDevices(); // Get paired devices
-			for(BluetoothDevice device : pairedDevices)
-				BtArrayAdapter.add(device.getName() + "\n" + device.getAddress());
-		}
-	};
-	private OnClickListener buttonSearchDevicesOrCancelListener = new OnClickListener(){
-		public void onClick(View view){
-			if(mBluetoothAdapter.isDiscovering()){
-				mBluetoothAdapter.cancelDiscovery();
-				Toast.makeText(getApplicationContext(), "Cancel Searching", Toast.LENGTH_SHORT).show();
-			}else{
-				BtArrayAdapter.clear();
-				mBluetoothAdapter.startDiscovery();
-				Toast.makeText(getApplicationContext(), "Searching", Toast.LENGTH_SHORT).show();
-			}
 		}
 	};
 	
 	/////////////////////////////////////////////////////////////////
 	// Implement message deliver mechanism - Use BroadcastReceiver //
 	/////////////////////////////////////////////////////////////////
-	
 	private class ServiceDataReceiver extends BroadcastReceiver{
 		@Override
 		public void onReceive(Context context, Intent intent){
@@ -424,44 +398,8 @@ public class MainActivity extends Activity {
 		}
 	}
 	
-	final BroadcastReceiver bluetoothReceiver = new BroadcastReceiver(){
-		public void onReceive(Context context, Intent intent){
-			String action = intent.getAction();
-			if(BluetoothDevice.ACTION_FOUND.equals(action)){
-				BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-				BtArrayAdapter.add(device.getName() + "\n" + device.getAddress());
-				BtArrayAdapter.notifyDataSetChanged();
-			}
-		}
-	};
-	
-	/////////////////////////////
-	// Bluetooth Server Thread //
-	/////////////////////////////
-	public class BluetoothServer extends Thread {
-		
-		private final BluetoothServerSocket mServerSocket;
-		
-		public BluetoothServer() {
-			
-			BluetoothServerSocket tempSocket = null;
-			
-			try{
-				tempSocket = mBluetoothAdapter.listenUsingRfcommWithServiceRecord(NAME, MY_UUID);
-			}
-			catch (IOException e){}
-			
-			mServerSocket = tempSocket;
-		}
-		
-		public void run() {
-			
-		}
-	}
-	
 	@Override
 	protected void onDestroy(){
 		super.onDestroy();
-		unregisterReceiver(bluetoothReceiver);
 	}
 }

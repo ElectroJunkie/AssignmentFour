@@ -106,47 +106,23 @@
         android:layout_height="wrap_content" >
 
         <Button
-            android:id="@+id/button_bluetooth_enable_discovery"
+            android:id="@+id/button_bluetooth_connect"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="0.5"
-            android:text="@string/BLUETOOTH_DISCOVER"
+            android:text="@string/CONNECT"
             android:textSize="12sp" />
 
 	    <Button
-        	android:id="@+id/button_bluetooth_pair"
+        	android:id="@+id/button_bluetooth_send_data"
         	android:layout_width="wrap_content"
         	android:layout_height="wrap_content"
         	android:layout_weight= "0.5"
         	android:textSize="12sp"
-        	android:text="@string/BLUETOOTH_PAIR" />
+        	android:text="@string/SEND_DATA" />
 			
     </LinearLayout>
-    
-    <LinearLayout
-        android:id="@+id/layout_line_6"
-        android:orientation="horizontal"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" >
 
-        <Button
-            android:id="@+id/button_search_devices_or_cancel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.5"
-            android:text="@string/SEARCH_DEVICES_OR_CANCEL"
-            android:textSize="12sp" />
-
-	    <Button
-        	android:id="@+id/button_list_paried_devices"
-        	android:layout_width="wrap_content"
-        	android:layout_height="wrap_content"
-        	android:layout_weight= "0.5"
-        	android:textSize="12sp"
-        	android:text="@string/LIST_PARIED_DEVICES" />
-			    
-    </LinearLayout>
-    
     <TextView
         android:id="@+id/textview_accel_data"
         android:layout_width="fill_parent"
@@ -166,13 +142,7 @@
         android:textSize="12sp"
         android:hint="@string/BLUETOOTH_HINT" >
     </TextView>
-    
-    <ListView
-        android:id="@+id/listview_bluetooth_devices"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
-    </ListView>
-    
+
     </LinearLayout>
     
 </ScrollView>
