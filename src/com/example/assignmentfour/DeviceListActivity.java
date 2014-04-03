@@ -23,13 +23,14 @@ import android.widget.TextView;
 
 public class DeviceListActivity extends Activity {
 	
+	// Intent Keys
+	public static String KEY_DEVICE_ADDRESS = "device_address";
+	
 	private Button buttonSearch;
 	
 	private BluetoothAdapter mBluetoothAdapter;
 	private ArrayAdapter<String> mArrayAdapterPairedDevices, mArrayAdapterNewDevices;
 	private Set<String> mSetNewDevices;
-	
-	public static String KEY_DEVICE_ADDRESS = "device_address";
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState){
@@ -53,9 +54,14 @@ public class DeviceListActivity extends Activity {
 		listViewNewDevices.setAdapter(mArrayAdapterNewDevices);
 		listViewNewDevices.setOnItemClickListener(listViewDevicesListener);
 		
+		// Set title visibility
+		findViewById(R.id.textview_paired_devices_title).setVisibility(View.VISIBLE);
+		findViewById(R.id.textview_new_devices_title).setVisibility(View.VISIBLE);
+		
 		// Set up search button with listener
 		buttonSearch = (Button) findViewById(R.id.button_search);
 		buttonSearch.setOnClickListener(new OnClickListener(){
+			@Override
 			public void onClick(View view){
 				discoverDevices();
 				view.setVisibility(View.GONE); // The button will not be click-able while discovering
@@ -72,15 +78,16 @@ public class DeviceListActivity extends Activity {
 		mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 		// Look up Bluetooth history and set the Paired Devices view
 		Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
+		
+		String notFound = getResources().getText(R.string.NOT_FOUND).toString();
 		if(pairedDevices != null && !pairedDevices.isEmpty()){
-			findViewById(R.id.textview_paired_devices_title).setVisibility(View.VISIBLE);
 			for(BluetoothDevice device : pairedDevices){
 				mArrayAdapterPairedDevices.add(device.getName() + "\n" + device.getAddress());
 			}
 		}else{
-			String notFound = getResources().getText(R.string.NOT_FOUND).toString();
 			mArrayAdapterPairedDevices.add(notFound);
 		}
+		mArrayAdapterNewDevices.add(notFound);
 	}
 	
 	private void discoverDevices(){
@@ -89,7 +96,6 @@ public class DeviceListActivity extends Activity {
 		mSetNewDevices.clear();
 		setProgressBarIndeterminateVisibility(true);
 		setTitle(R.string.SEARCHING);
-		findViewById(R.id.textview_new_devices_title).setVisibility(View.VISIBLE);
 		if (mBluetoothAdapter.isDiscovering()){
 			mBluetoothAdapter.cancelDiscovery();
 		}
@@ -98,6 +104,7 @@ public class DeviceListActivity extends Activity {
 	
 	private OnItemClickListener listViewDevicesListener = new OnItemClickListener(){
 		
+		@Override
 		public void onItemClick(AdapterView<?> av, View devicename, int arg2, long arg3){
 			
 			// Just in case, it is still trying to discover. It costs.

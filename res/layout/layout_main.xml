@@ -88,7 +88,7 @@
         	android:layout_weight= "0.5"
         	android:textSize="12sp"
         	android:text="@string/BLUETOOTH_ON" />
-					
+
 	    <Button
     	    android:id="@+id/button_bluetooth_off"
 	        android:layout_width="wrap_content"
@@ -96,9 +96,9 @@
         	android:layout_weight= "0.5"
         	android:textSize="12sp"
         	android:text="@string/BLUETOOTH_OFF" />
-			
+
 	</LinearLayout>
-	
+
     <LinearLayout
         android:id="@+id/layout_line_5"
         android:orientation="horizontal"
@@ -120,7 +120,7 @@
         	android:layout_weight= "0.5"
         	android:textSize="12sp"
         	android:text="@string/SEND_DATA" />
-			
+
     </LinearLayout>
 
     <TextView

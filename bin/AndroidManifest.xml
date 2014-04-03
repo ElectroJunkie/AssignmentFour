@@ -44,6 +44,11 @@
             android:theme="@style/Theme.Boxandroidlibv2.DialogNoTitle" >
         </activity>
         
+        <activity
+            android:name="com.example.assignmentfour.DeviceListActivity"
+            android:theme="@android:style/Theme.Dialog" >
+        </activity>
+        
     </application>
 	
 </manifest>

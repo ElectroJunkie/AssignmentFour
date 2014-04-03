@@ -18,7 +18,7 @@
     <ListView 
         android:id="@+id/listview_paired_devices"
         android:layout_width="fill_parent"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:stackFromBottom="true"
         android:layout_weight="1"
         />
@@ -48,5 +48,5 @@
         android:layout_height="wrap_content"
         android:text="@string/SEARCH"
         />
-
+	
 </LinearLayout>

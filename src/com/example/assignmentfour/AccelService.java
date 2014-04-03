@@ -66,7 +66,7 @@ public class AccelService extends Service implements SensorEventListener{
 			
 			sensorManager.registerListener(this,
 					sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
-					sensorManager.SENSOR_DELAY_NORMAL);
+					SensorManager.SENSOR_DELAY_NORMAL);
 		}else{
 			Toast.makeText(getApplicationContext(), "Accelerometer NOT Detected", Toast.LENGTH_SHORT).show();
 		}

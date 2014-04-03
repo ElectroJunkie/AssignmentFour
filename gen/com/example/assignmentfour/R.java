@@ -45,7 +45,8 @@ public final class R {
         public static final int boxandroidlibv2_progress_spinner=0x7f020015;
         public static final int boxandroidlibv2_rectangle_light_blue=0x7f020016;
         public static final int boxandroidlibv2_rectangle_light_grey=0x7f020017;
-        public static final int ic_launcher=0x7f020018;
+        public static final int button=0x7f020018;
+        public static final int ic_launcher=0x7f020019;
     }
     public static final class id {
         public static final int PickerListView=0x7f08000d;

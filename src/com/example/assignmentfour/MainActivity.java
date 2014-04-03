@@ -40,10 +40,12 @@ import com.box.boxjavalibv2.requests.requestobjects.BoxFileUploadRequestObject;
 
 public class MainActivity extends Activity {
 	
-	private final static int AUTH_REQUEST = 1;
-	private final static int UPLOAD_REQUEST = 2;
-	private final static int DOWNLOAD_REQUEST = 3;
-	private static final int REQUEST_ENABLE_BT = 4;
+	// Intent request codes
+	private static final int REQUEST_BOX_AUTH = 1;
+	private static final int REQUEST_BOX_UPLOAD = 2;
+	private static final int REQUEST_BOX_DOWNLOAD = 3;
+	private static final int REQUEST_BT_ENABLE = 4;
+	private static final int REQUEST_BT_CONNECT_DEVICE = 5;
 	
 	Button buttonStartService, buttonStopService;
 	Button buttonWrite, buttonAuthenticate;
@@ -68,14 +70,6 @@ public class MainActivity extends Activity {
 	Set<BluetoothDevice> pairedDevices;
 	ListView listViewBluetoothDevices;
 	private BluetoothService mBluetoothService = null;
-	
-	// Handler //
-	private final Handler mHandler = new Handler(){
-		@Override
-		public void handleMessage(Message message){
-			
-		}
-	};
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -113,6 +107,40 @@ public class MainActivity extends Activity {
 			// Maybe make a toast!
 		}
 	}
+	
+	// Handler //
+	private final Handler mHandler = new Handler(){
+		@Override
+		public void handleMessage(Message message){
+			
+		}
+	};
+	
+	@Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+        	case REQUEST_BOX_AUTH:
+        		onAuthenticated(resultCode, data);
+        		break;
+        	case REQUEST_BOX_UPLOAD:
+        		onFolderSelected(resultCode, data);
+        		break;
+        	case REQUEST_BOX_DOWNLOAD:
+        		onFileSelected(resultCode, data);
+        		break;
+        	case REQUEST_BT_ENABLE:
+        		// Not much to do here. Could toast and log.
+        		break;
+        	case REQUEST_BT_CONNECT_DEVICE:
+        		if (resultCode == Activity.RESULT_OK){
+        			String address = data.getStringExtra(DeviceListActivity.KEY_DEVICE_ADDRESS);
+        			BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
+        			mBluetoothService.connect(device);
+        		}
+        		break;
+        }
+    }
 	
 	/////////
 	// Box //
@@ -152,14 +180,14 @@ public class MainActivity extends Activity {
 	private void startAuthentication(){
 		Intent intentBox = OAuthActivity.createOAuthActivityIntent(this, BoxApplication.CLIENT_ID,
 				BoxApplication.CLIENT_SECRET, false, BoxApplication.REDIRECT_URL);
-		this.startActivityForResult(intentBox,  AUTH_REQUEST);
+		this.startActivityForResult(intentBox,  REQUEST_BOX_AUTH);
 	}
 	private void doUpload(){
 		try{
 			BoxAndroidClient client = ((BoxApplication) getApplication()).getClient();
 			Intent intent = FolderPickerActivity.getLaunchIntent(this, "0", (BoxAndroidOAuthData) client.getAuthData(),
 					BoxApplication.CLIENT_ID, BoxApplication.CLIENT_SECRET);
-			startActivityForResult(intent, UPLOAD_REQUEST);
+			startActivityForResult(intent, REQUEST_BOX_UPLOAD);
 		}
 		catch (AuthFatalFailureException e){
 			e.printStackTrace();
@@ -170,28 +198,12 @@ public class MainActivity extends Activity {
 			BoxAndroidClient client = ((BoxApplication) getApplication()).getClient();
 			Intent intent = FilePickerActivity.getLaunchIntent(this,  "0", (BoxAndroidOAuthData) client.getAuthData(),
 					BoxApplication.CLIENT_ID, BoxApplication.CLIENT_SECRET);
-			startActivityForResult(intent, DOWNLOAD_REQUEST);
+			startActivityForResult(intent, REQUEST_BOX_DOWNLOAD);
 		}
 		catch (AuthFatalFailureException e){
 			e.printStackTrace();
 		}
 	}
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == AUTH_REQUEST) {
-            onAuthenticated(resultCode, data);
-        }
-        else if (requestCode == UPLOAD_REQUEST) {
-            onFolderSelected(resultCode, data);
-        }
-        else if (requestCode == DOWNLOAD_REQUEST) {
-            onFileSelected(resultCode, data);
-        }
-        else if (requestCode == REQUEST_ENABLE_BT){
-        	//Do something here?
-    	}
-    }
     private void onAuthenticated(int resultCode, Intent data) {
         if (Activity.RESULT_OK != resultCode) {
             Toast.makeText(this, "fail", Toast.LENGTH_LONG).show();
@@ -211,7 +223,7 @@ public class MainActivity extends Activity {
     }
     private void onFileSelected(int resultCode, Intent data) {
         if (Activity.RESULT_OK != resultCode) {
-            Toast.makeText(this, "fail", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "fail", Toast.LENGTH_SHORT).show();
         }
         else {
             final BoxAndroidFile file = data.getParcelableExtra(FilePickerActivity.EXTRA_BOX_ANDROID_FILE);
@@ -300,6 +312,7 @@ public class MainActivity extends Activity {
 	////////////////////////////////
 	// Start service and register the listener
 	public OnClickListener buttonStartServiceListener = new OnClickListener(){
+		@Override
 		public void onClick(View view){
 			if(serviceFlag == false){
 				dataReceiver = new ServiceDataReceiver();
@@ -316,6 +329,7 @@ public class MainActivity extends Activity {
 	};
 	// Stop service and unregister the listener
 	private OnClickListener buttonStopServiceListener = new OnClickListener(){
+		@Override
 		public void onClick(View view){
 			if(serviceFlag == true){
 				Intent intent_accel = new Intent(MainActivity.this, AccelService.class);
@@ -329,6 +343,7 @@ public class MainActivity extends Activity {
 		}
 	};
 	private OnClickListener buttonWriteListener = new OnClickListener(){
+		@Override
 		public void onClick(View view){
 			if(serviceFlag == true){
 				try{
@@ -351,30 +366,42 @@ public class MainActivity extends Activity {
 			
 		}
 	};
+	
 	private OnClickListener buttonBluetoothOnListener = new OnClickListener(){
+		@Override
 		public void onClick(View view){
 			if(!mBluetoothAdapter.isEnabled()){
-				Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-				startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
-			}else{
-				//
+				Intent intentBluetoothOn = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+				startActivityForResult(intentBluetoothOn, REQUEST_BT_ENABLE);
 			}
 		}
 	};
+	
 	private OnClickListener buttonBluetoothOffListener = new OnClickListener(){
+		@Override
 		public void onClick(View view){
-			mBluetoothAdapter.disable();
-			// For this part to work, you need the BLUETOOTH_ADMIN permission on manifest.
+			if(mBluetoothAdapter.isEnabled()){
+				mBluetoothAdapter.disable();
+				// For this part to work, you need the BLUETOOTH_ADMIN permission on manifest.
+			}
 		}
 	};
+	
 	private OnClickListener buttonBluetoothConnectListener = new OnClickListener(){
+		@Override
 		public void onClick(View view){
-			Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
-			discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
-			startActivity(discoverableIntent);
+			
+			// First check if the Bluetooth is enabled or not.
+			if(mBluetoothAdapter.isEnabled()){
+				Intent intent = new Intent(MainActivity.this, DeviceListActivity.class);
+				startActivityForResult(intent, REQUEST_BT_CONNECT_DEVICE);
+			}else{
+				Toast.makeText(getApplicationContext(), "Please enable Bluetooth first", Toast.LENGTH_SHORT).show();
+			}
 		}
 	};
 	private OnClickListener buttonBluetoothSendDataListener = new OnClickListener(){
+		@Override
 		public void onClick(View view){
 			
 		}

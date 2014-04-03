@@ -24,7 +24,8 @@ int drawable boxandroidlibv2_navigation_selector 0x7f020014
 int drawable boxandroidlibv2_progress_spinner 0x7f020015
 int drawable boxandroidlibv2_rectangle_light_blue 0x7f020016
 int drawable boxandroidlibv2_rectangle_light_grey 0x7f020017
-int drawable ic_launcher 0x7f020018
+int drawable button 0x7f020018
+int drawable ic_launcher 0x7f020019
 int id PickerListView 0x7f08000d
 int id action_settings 0x7f080029
 int id boxItemMain 0x7f080005
