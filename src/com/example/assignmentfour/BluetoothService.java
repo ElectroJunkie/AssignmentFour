@@ -7,8 +7,13 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.os.Handler;
+import android.widget.Toast;
 
 public class BluetoothService {
+	
+	// Message List
+	public static final int MSG_CONNECTED = 6;
+	public static final int MSG_DISCONNECTED = 7;
 	
 	private final BluetoothAdapter mBluetoothAdapter;
 	private final Handler mHandler;
@@ -21,6 +26,11 @@ public class BluetoothService {
 		
 		mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 		mHandler = handler;
+	}
+	
+	// Message delivery
+	private void sendMessage(int messageId){
+		mHandler.obtainMessage(messageId).sendToTarget();
 	}
 	
 	// Calls the connect thread.
@@ -59,6 +69,9 @@ public class BluetoothService {
 				
 			}
 			connected(mBluetoothSocket, mBluetoothDevice);
+			sendMessage(MSG_CONNECTED);
+			// Reset connect thread.
+			mConnectThread = null;
 		}
 	}
 	
@@ -81,7 +94,23 @@ public class BluetoothService {
 		
 		@Override
 		public void run(){
-			// I'm not doing anything just yet.
+			
+		}
+		
+		public void disconnect(){
+			try{
+				mmSocket.close();
+			}catch(IOException e){
+				
+			}
+		}
+	}
+	
+	public void disconnect(){
+		
+		if(mConnectedThread != null){
+			mConnectedThread.disconnect();
+			sendMessage(MSG_DISCONNECTED);
 		}
 	}
 }

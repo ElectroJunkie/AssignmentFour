@@ -52,6 +52,7 @@ public class MainActivity extends Activity {
 	Button buttonBoxUpload, buttonBoxDownload;
 	Button buttonBluetoothOn, buttonBluetoothOff;
 	Button buttonBluetoothConnect, buttonBluetoothSendData;
+	Button buttonDiscoverable, buttonDC;
 	
 	TextView accelDataTextView, textViewBluetooth;
 	ServiceDataReceiver dataReceiver;
@@ -85,6 +86,8 @@ public class MainActivity extends Activity {
 		buttonBluetoothOff = (Button) findViewById(R.id.button_bluetooth_off);
 		buttonBluetoothConnect = (Button) findViewById(R.id.button_bluetooth_connect);
 		buttonBluetoothSendData = (Button) findViewById(R.id.button_bluetooth_send_data);
+		buttonDiscoverable = (Button) findViewById(R.id.discoverable);
+		buttonDC = (Button) findViewById(R.id.dc);
 		
 		// Set up on click listeners
 		buttonStartService.setOnClickListener(buttonStartServiceListener);
@@ -94,6 +97,20 @@ public class MainActivity extends Activity {
 		buttonBluetoothOff.setOnClickListener(buttonBluetoothOffListener);
 		buttonBluetoothConnect.setOnClickListener(buttonBluetoothConnectListener);
 		buttonBluetoothSendData.setOnClickListener(buttonBluetoothSendDataListener);
+		buttonDiscoverable.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View view){
+				Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
+				discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
+				startActivity(discoverableIntent);
+			}
+		});
+		buttonDC.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View view){
+				mBluetoothService.disconnect();
+			}
+		});
 		
 		initializeBoxUI();
 		//Toast.makeText(getApplicationContext(), dir.getAbsolutePath(), Toast.LENGTH_SHORT).show();
@@ -112,7 +129,14 @@ public class MainActivity extends Activity {
 	private final Handler mHandler = new Handler(){
 		@Override
 		public void handleMessage(Message message){
-			
+			switch (message.what){
+				case BluetoothService.MSG_CONNECTED:
+					Toast.makeText(getApplicationContext(), "Bluetooth Connected", Toast.LENGTH_SHORT).show();
+					break;
+				case BluetoothService.MSG_DISCONNECTED:
+					Toast.makeText(getApplicationContext(), "Bluetooth Disconnected", Toast.LENGTH_SHORT).show();
+					break;
+			}
 		}
 	};
 	

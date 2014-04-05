@@ -2,147 +2,201 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/scroll_view"
     android:layout_width="fill_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent"
+    android:layout_marginTop="5dip"
+    android:layout_marginRight="5dip"
+    android:layout_marginLeft="5dip" >
     
     <LinearLayout
         android:id="@+id/top_layout"
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
-    
-    <LinearLayout
-        android:id="@+id/layout_line_1"
-        android:orientation="horizontal"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" >
-        
-    	<Button 
-        	android:id="@+id/button_start_service"
-        	android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dip"
+    	android:layout_marginRight="5dip"
+    	android:layout_marginLeft="5dip" >
+		
+    	<TextView 
+        	android:id="@+id/title_accelerometer"
+        	android:layout_width="fill_parent"
         	android:layout_height="wrap_content"
-        	android:layout_weight="0.5"
-        	android:textSize="12sp"
-        	android:text="@string/START_SERVICE"></Button>
-    	<Button 
-        	android:id="@+id/button_stop_service"
-        	android:layout_width="wrap_content"
+        	android:gravity="center"
+        	android:text="@string/TITLE_ACCELEROMETER" />
+    	
+    	<LinearLayout
+	        android:id="@+id/layout_line_1"
+        	android:orientation="horizontal"
+        	android:layout_width="fill_parent"
+        	android:layout_height="wrap_content" >
+	        
+    		<Button 
+	        	android:id="@+id/button_start_service"
+        		android:layout_width="150dip"
+        		android:layout_height="wrap_content"
+        		android:textSize="12sp"
+        		android:text="@string/BEGIN_ACCELEROMETER" />
+    		
+    		<Button 
+	        	android:id="@+id/button_stop_service"
+        		android:layout_width="150dip"
+        		android:layout_height="wrap_content"
+        		android:textSize="12sp"
+        		android:text="@string/PAUSE_ACCELEROMETER" />
+    		
+    	</LinearLayout>
+    	
+    	<LinearLayout
+	        android:id="@+id/layout_line_2"
+        	android:orientation="horizontal"
+        	android:layout_width="fill_parent"
+        	android:layout_height="wrap_content" >
+	        
+    		<Button 
+	        	android:id="@+id/button_write"
+        		android:layout_width="150dip"
+        		android:layout_height="wrap_content"
+        		android:textSize="12sp"
+        		android:text="@string/WRITE" />
+				
+    	    <Button 
+        		android:id="@+id/button_plot"
+	        	android:layout_width="150dip"
+        		android:layout_height="wrap_content"
+        		android:textSize="12sp"
+        		android:text="@string/PLOT" />
+    			
+    	</LinearLayout>
+		
+    	<TextView
+    	    android:id="@+id/textview_accel_data"
+    	    android:layout_width="fill_parent"
+    	    android:layout_height="50dip"
+    	    android:gravity="center"
+    	    android:textSize="12sp"
+    	    android:hint="@string/TEXTVIEW_HINT" />
+    	
+    	<TextView 
+        	android:id="@+id/title_box"
+        	android:layout_width="fill_parent"
         	android:layout_height="wrap_content"
-        	android:layout_weight="0.5"
+        	android:gravity="center"
+        	android:text="@string/TITLE_BOX" />
+    	
+    	<LinearLayout
+        	android:id="@+id/layout_line_3"
+        	android:orientation="horizontal"
+        	android:layout_width="fill_parent"
+        	android:layout_height="wrap_content" >
+	        
+            <Button 
+        		android:id="@+id/button_authenticate"
+        		android:layout_width="wrap_content"
+        		android:layout_height="wrap_content"
+        		android:layout_weight="0.5"
+        		android:textSize="12sp"
+        		android:text="@string/AUTHENTICATE" />
+        	
+    		<Button 
+	        	android:id="@+id/button_box_upload"
+        		android:layout_width="wrap_content"
+        		android:layout_height="wrap_content"
+        		android:layout_weight="0.5"
+        		android:textSize="12sp"
+        		android:text="@string/BOX_UPLOAD" />
+    		
+    		<Button 
+	        	android:id="@+id/button_box_download"
+        		android:layout_width="wrap_content"
+        		android:layout_height="wrap_content"
+        		android:layout_weight="0.5"
+        		android:textSize="12sp"
+        		android:text="@string/BOX_DOWNLOAD" />
+    		
+    	</LinearLayout>
+    	
+    	<TextView 
+        	android:id="@+id/title_bluetooth"
+        	android:layout_width="fill_parent"
+        	android:layout_height="wrap_content"
+        	android:gravity="center"
+        	android:text="@string/TITLE_BLUETOOTH" />
+    	
+    	<LinearLayout
+	        android:id="@+id/layout_line_4"
+        	android:orientation="horizontal"
+        	android:layout_width="fill_parent"
+        	android:layout_height="wrap_content" >
+    		
+    		<Button
+		        android:id="@+id/button_bluetooth_on"
+        		android:layout_width="wrap_content"
+        		android:layout_height="wrap_content"
+        		android:layout_weight= "0.5"
+        		android:textSize="12sp"
+        		android:text="@string/BLUETOOTH_ON" />
+
+	    	<Button
+	    	    android:id="@+id/button_bluetooth_off"
+	        	android:layout_width="wrap_content"
+        		android:layout_height="wrap_content"
+        		android:layout_weight= "0.5"
+        		android:textSize="12sp"
+        		android:text="@string/BLUETOOTH_OFF" />
+		
+		</LinearLayout>
+		
+    	<LinearLayout
+	        android:id="@+id/layout_line_5"
+        	android:orientation="horizontal"
+        	android:layout_width="fill_parent"
+        	android:layout_height="wrap_content" >
+			
+        	<Button
+	            android:id="@+id/button_bluetooth_connect"
+            	android:layout_width="wrap_content"
+            	android:layout_height="wrap_content"
+            	android:layout_weight="0.5"
+            	android:text="@string/CONNECT"
+            	android:textSize="12sp" />
+			
+	    	<Button
+	        	android:id="@+id/button_bluetooth_send_data"
+        		android:layout_width="wrap_content"
+        		android:layout_height="wrap_content"
+        		android:layout_weight= "0.5"
+        		android:textSize="12sp"
+        		android:text="@string/SEND_DATA" />
+		
+	    </LinearLayout>
+		
+    	<LinearLayout
+	    	android:id="@+id/layout_line_6"
+        	android:orientation="horizontal"
+        	android:layout_width="fill_parent"
+        	android:layout_height="wrap_content" >
+	    	
+	    	<Button
+        		android:id="@+id/discoverable"
+        		android:layout_width="wrap_content"
+        		android:layout_height="wrap_content"
+        		android:text="Enable Discovery" />
+			
+	    	<Button
+	        	android:id="@+id/dc"
+        		android:layout_width="wrap_content"
+        		android:layout_height="wrap_content"
+        		android:text="DC" />
+			
+	    </LinearLayout>
+	    
+	    <TextView
+        	android:id="@+id/textview_bluetooth"
+        	android:layout_width="fill_parent"
+        	android:layout_height="50dip"
+        	android:gravity="center"
         	android:textSize="12sp"
-        	android:text="@string/STOP_SERVICE"></Button>
+        	android:hint="@string/BLUETOOTH_HINT" />
+		
     </LinearLayout>
-    
-    <LinearLayout
-        android:id="@+id/layout_line_2"
-        android:orientation="horizontal"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" >
-        
-    	<Button 
-        	android:id="@+id/button_write"
-        	android:layout_width="wrap_content"
-        	android:layout_height="wrap_content"
-        	android:layout_weight="0.5"
-        	android:textSize="12sp"
-        	android:text="@string/WRITE"></Button>
-    	<Button 
-        	android:id="@+id/button_authenticate"
-        	android:layout_width="wrap_content"
-        	android:layout_height="wrap_content"
-        	android:layout_weight="0.5"
-        	android:textSize="12sp"
-        	android:text="@string/AUTHENTICATE"></Button>
-    </LinearLayout>
-    
-    <LinearLayout
-        android:id="@+id/layout_line_3"
-        android:orientation="horizontal"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" >
-        
-    	<Button 
-        	android:id="@+id/button_box_upload"
-        	android:layout_width="wrap_content"
-        	android:layout_height="wrap_content"
-        	android:layout_weight="0.5"
-        	android:textSize="12sp"
-        	android:text="@string/BOX_UPLOAD"></Button>
-    	<Button 
-        	android:id="@+id/button_box_download"
-        	android:layout_width="wrap_content"
-        	android:layout_height="wrap_content"
-        	android:layout_weight="0.5"
-        	android:textSize="12sp"
-        	android:text="@string/BOX_DOWNLOAD"></Button>
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/layout_line_4"
-        android:orientation="horizontal"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" >
-    	<Button
-	        android:id="@+id/button_bluetooth_on"
-        	android:layout_width="wrap_content"
-        	android:layout_height="wrap_content"
-        	android:layout_weight= "0.5"
-        	android:textSize="12sp"
-        	android:text="@string/BLUETOOTH_ON" />
-
-	    <Button
-    	    android:id="@+id/button_bluetooth_off"
-	        android:layout_width="wrap_content"
-        	android:layout_height="wrap_content"
-        	android:layout_weight= "0.5"
-        	android:textSize="12sp"
-        	android:text="@string/BLUETOOTH_OFF" />
-
-	</LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/layout_line_5"
-        android:orientation="horizontal"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" >
-
-        <Button
-            android:id="@+id/button_bluetooth_connect"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.5"
-            android:text="@string/CONNECT"
-            android:textSize="12sp" />
-
-	    <Button
-        	android:id="@+id/button_bluetooth_send_data"
-        	android:layout_width="wrap_content"
-        	android:layout_height="wrap_content"
-        	android:layout_weight= "0.5"
-        	android:textSize="12sp"
-        	android:text="@string/SEND_DATA" />
-
-    </LinearLayout>
-
-    <TextView
-        android:id="@+id/textview_accel_data"
-        android:layout_width="fill_parent"
-        android:layout_height="50dip"
-        android:ellipsize="start"
-        android:gravity="center"
-        android:textSize="12sp"
-        android:hint="@string/TEXTVIEW_HINT" >
-    </TextView>
-    
-    <TextView
-        android:id="@+id/textview_bluetooth"
-        android:layout_width="fill_parent"
-        android:layout_height="50dip"
-        android:ellipsize="start"
-        android:gravity="center"
-        android:textSize="12sp"
-        android:hint="@string/BLUETOOTH_HINT" >
-    </TextView>
-
-    </LinearLayout>
-    
+	
 </ScrollView>
